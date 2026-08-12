@@ -13,14 +13,6 @@
 <body>
 
   <!-- ================================================================== -->
-  <!--  CHECKOUT STATUS BANNER (Stripe redirect confirmation)              -->
-  <!-- ================================================================== -->
-  <div id="checkoutStatusBanner" class="checkout-banner" role="status" hidden>
-    <span id="checkoutStatusText" class="checkout-banner__text"></span>
-    <button type="button" id="checkoutStatusClose" class="checkout-banner__close" aria-label="Dismiss">&times;</button>
-  </div>
-
-  <!-- ================================================================== -->
   <!--  NAV                                                                -->
   <!-- ================================================================== -->
   <header class="nav" id="nav">
@@ -478,6 +470,14 @@
       <p>&copy; 2026 Javid Medina &nbsp;&middot;&nbsp; <a href="/terms.html">Legal // Terms</a></p>
     </div>
   </footer>
+
+  <!-- ================================================================== -->
+  <!--  CHECKOUT STATUS TOAST (Stripe redirect confirmation)                -->
+  <!-- ================================================================== -->
+  <div id="checkoutStatusBanner" class="checkout-banner" role="status" hidden>
+    <span id="checkoutStatusText" class="checkout-banner__text"></span>
+    <button type="button" id="checkoutStatusClose" class="checkout-banner__close" aria-label="Dismiss">&times;</button>
+  </div>
 
   <script type="module" src="/src/main.ts"></script>
 </body>

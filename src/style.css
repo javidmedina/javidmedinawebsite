@@ -19,9 +19,15 @@
   @apply opacity-60 cursor-not-allowed;
 }
 
-/* New: post-Stripe-redirect confirmation/cancellation banner */
+/* New: post-Stripe-redirect confirmation/cancellation toast.
+   Fixed to the *bottom* of the viewport, not the top: .nav is already
+   `position: fixed; top: 0` with its own z-index stack, so a top banner
+   would either render underneath it or force nav-offset math everywhere
+   nav height is assumed (hero padding-top, etc.). Bottom avoids all of
+   that with no layout-flow side effects. */
 .checkout-banner {
-  @apply sticky top-0 z-50 flex items-center justify-center gap-4 px-4 py-3 text-center text-sm font-medium text-white;
+  @apply fixed inset-x-0 bottom-0 z-[200] flex items-center justify-center gap-4 px-4 py-3 text-center text-sm font-medium text-white;
+  padding-bottom: calc(0.75rem + env(safe-area-inset-bottom));
 }
 
 .checkout-banner--success {
