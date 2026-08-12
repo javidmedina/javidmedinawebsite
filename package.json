@@ -16,12 +16,12 @@
     "stripe": "^17.4.0"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20250110.0",
+    "@cloudflare/workers-types": "^5.20260812.1",
     "autoprefixer": "^10.4.20",
     "postcss": "^8.4.49",
     "tailwindcss": "^3.4.17",
     "typescript": "^5.7.2",
     "vite": "^6.0.7",
-    "wrangler": "^3.99.0"
+    "wrangler": "^4.122.0"
   }
 }
