@@ -1,4 +1,4 @@
-import { checkDomain, searchDomains, type Env, type DomainPricing } from '../_lib';
+import { checkDomain, searchDomains, type Env, type DomainPricing } from '../lib';
 
 function toClientShape(d: DomainPricing) {
   return {
@@ -11,8 +11,7 @@ function toClientShape(d: DomainPricing) {
   };
 }
 
-export const onRequestGet: PagesFunction<Env> = async (context) => {
-  const { request, env } = context;
+export async function handleDomainSearch(request: Request, env: Env): Promise<Response> {
   const q = new URL(request.url).searchParams.get('q')?.trim();
 
   if (!q || q.length < 2) {
@@ -29,4 +28,4 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     console.error('Domain search failed:', err);
     return Response.json({ error: 'Domain lookup failed. Please try again shortly.' }, { status: 502 });
   }
-};
+}
