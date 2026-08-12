@@ -75,6 +75,12 @@ you don't have `gh` installed/authenticated, create the repo manually on github.
    - Framework preset: **Vite**
    - Build command: `npm run build`
    - Build output directory: `dist`
+   - **Deploy command: `npx wrangler pages deploy dist`** — some dashboard flows default this
+     field to the plain `npx wrangler deploy` (a Workers-only command), which fails with
+     `It looks like you've run a Workers-specific command in a Pages project.` This is a
+     Pages project (`pages_build_output_dir` in `wrangler.toml`), so the deploy command must
+     use the `pages deploy` subcommand explicitly. If your build log's last line reads
+     `Executing user deploy command: npx wrangler deploy`, this is the field to fix.
 4. Deploy. Every push to `main` now redeploys automatically; PRs get preview URLs for free.
 
 ### Environment variables (Settings → Environment variables, for both Production and Preview)
