@@ -1,0 +1,62 @@
+/*
+ * The original hand-written stylesheet already implements a fluid,
+ * mostly-responsive design (clamp() typography, a mobile nav, a mobile
+ * carousel). Rather than rewrite ~1400 lines of tuned CSS into Tailwind
+ * utilities blind (high risk of visual regressions with no visual QA
+ * loop), we keep it as the design system and layer Tailwind's utilities
+ * on top for anything new (the checkout button states below, future
+ * components). See MIGRATION.md for the full rationale. @import must
+ * come before any other statement, so it's placed ahead of @tailwind.
+ */
+@import './legacy.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* New: Stripe checkout button loading/disabled state, Tailwind utilities */
+.plan-card__cta[disabled] {
+  @apply opacity-60 cursor-not-allowed;
+}
+
+/* New: domain search + instant-checkout widget in the CTA form */
+.domain-search {
+  @apply mt-3 flex flex-col gap-3 rounded-lg border border-black/10 p-4;
+}
+
+.domain-search__hint {
+  @apply text-xs text-black/60;
+}
+
+.domain-search__row {
+  @apply flex flex-col gap-2 sm:flex-row;
+}
+
+.domain-search__row input {
+  @apply flex-1;
+}
+
+.domain-search__row button,
+#domainPayBtn {
+  @apply rounded-md bg-black px-4 py-2 text-sm font-medium text-white transition-opacity hover:opacity-80 disabled:opacity-50;
+}
+
+.domain-search__results {
+  @apply flex flex-col gap-2 text-sm;
+}
+
+.domain-result {
+  @apply flex items-center justify-between gap-3 rounded-md bg-black/5 px-3 py-2;
+}
+
+.domain-result button {
+  @apply rounded bg-black px-3 py-1 text-xs font-medium text-white hover:opacity-80;
+}
+
+.domain-search__selected {
+  @apply text-sm font-medium;
+}
+
+#domainPayBtn {
+  @apply self-start;
+}

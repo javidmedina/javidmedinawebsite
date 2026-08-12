@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="description" content="Javid Medina — Custom websites built from scratch for creators and businesses." />
+  <title>Javid Medina — Custom Web Development</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- ================================================================== -->
+  <!--  NAV                                                                -->
+  <!-- ================================================================== -->
+  <header class="nav" id="nav">
+    <div class="nav__inner">
+      <a href="#" class="nav__brand"><img src="/assets/images/infinite-marquee/javidmedina-1.svg" alt="Javid Medina" /></a>
+      <nav>
+        <ul class="nav__links">
+          <li><a href="#why">Services</a></li>
+          <li><a href="#pricing">Pricing</a></li>
+          <li><a href="#why">Why Work With Me</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </nav>
+      <a href="#cta" class="nav__cta">Get Started</a>
+      <button class="nav__hamburger" id="navHamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+    <div class="nav__mobile" id="navMobile">
+      <ul class="nav__mobile-links">
+        <li><a href="#why">Services</a></li>
+        <li><a href="#pricing">Pricing</a></li>
+        <li><a href="#why">Why Work With Me</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+      <a href="#cta" class="nav__mobile-cta">Get Started</a>
+    </div>
+  </header>
+
+  <!-- ================================================================== -->
+  <!--  HERO                                                               -->
+  <!-- ================================================================== -->
+  <section class="hero" id="hero">
+    <div class="hero__inner">
+      <h1 class="hero__headline">
+        Custom Websites<br />Built from Scratch
+      </h1>
+      <p class="hero__sub">
+        Everything from design to deployment — handled for you.<br />
+        Tell me what you need, I&rsquo;ll build it.
+      </p>
+      <div class="hero__marquee" aria-hidden="true">
+        <div class="hero__marquee-track">
+          <span class="hero__marquee-item">Web Development</span>
+          <span class="hero__marquee-dot">&middot;</span>
+          <span class="hero__marquee-item">Custom CMS</span>
+          <span class="hero__marquee-dot">&middot;</span>
+          <span class="hero__marquee-item">SEO</span>
+          <span class="hero__marquee-dot">&middot;</span>
+          <span class="hero__marquee-item">Link-in-Bio</span>
+          <span class="hero__marquee-dot">&middot;</span>
+          <span class="hero__marquee-item">E-Commerce</span>
+          <span class="hero__marquee-dot">&middot;</span>
+          <span class="hero__marquee-item">Stripe</span>
+          <span class="hero__marquee-dot">&middot;</span>
+          <span class="hero__marquee-item">Mobile-First</span>
+          <span class="hero__marquee-dot">&middot;</span>
+          <span class="hero__marquee-item">Static Hosting</span>
+          <!-- duplicate for seamless loop -->
+          <span class="hero__marquee-dot">&middot;</span>
+          <span class="hero__marquee-item">Web Development</span>
+          <span class="hero__marquee-dot">&middot;</span>
+          <span class="hero__marquee-item">Custom CMS</span>
+          <span class="hero__marquee-dot">&middot;</span>
+          <span class="hero__marquee-item">SEO</span>
+          <span class="hero__marquee-dot">&middot;</span>
+          <span class="hero__marquee-item">Link-in-Bio</span>
+          <span class="hero__marquee-dot">&middot;</span>
+          <span class="hero__marquee-item">E-Commerce</span>
+          <span class="hero__marquee-dot">&middot;</span>
+          <span class="hero__marquee-item">Stripe</span>
+          <span class="hero__marquee-dot">&middot;</span>
+          <span class="hero__marquee-item">Mobile-First</span>
+          <span class="hero__marquee-dot">&middot;</span>
+          <span class="hero__marquee-item">Static Hosting</span>
+        </div>
+      </div>
+      <div class="hero__actions">
+        <a href="#pricing" class="hero__btn hero__btn--primary">View Pricing</a>
+        <a href="#cta" class="hero__btn hero__btn--ghost">Book a Call</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================================== -->
+  <!--  CLIENT SHOWCASE MARQUEE                                            -->
+  <!-- ================================================================== -->
+  <div class="showcase-heading">
+    <h2 class="showcase-heading__title">Latest Client Showcases</h2>
+  </div>
+
+  <section class="marquee marquee--boxes" aria-label="Latest client showcase previews">
+    <button class="marquee__arrow marquee__arrow--prev" type="button" aria-label="Previous project" aria-controls="boxesTrack">
+      <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">
+        <path d="M15 18l-6-6 6-6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <div class="marquee__track" id="boxesTrack" aria-hidden="true">
+
+      <!-- original set -->
+      <a href="https://home.eloysvalerio.workers.dev"
+         target="_blank" rel="noopener"
+         class="marquee__item">
+        <span class="marquee__img-wrap">
+          <img src="/assets/images/latest-cilent-showcase/example1-cilent.png"
+               alt="Client project 1" loading="lazy" />
+        </span>
+        <span class="marquee__tooltip">
+          <span class="marquee__tooltip-inner">
+            <span class="marquee__tooltip-title">home.eloysvalerio.workers.dev</span>
+            <span class="marquee__tooltip-desc">A high-end, custom talent portfolio built for actor and model Eloys Valerio. Features a modern 'bento-box' layout, a smooth dark-mode interface, and a built-in language switcher to effortlessly reach both English and Spanish-speaking casting directors.</span>
+            <span class="marquee__tooltip-cta" data-scroll-to="cta">Interested in a site like this?</span>
+          </span>
+        </span>
+      </a>
+
+      <a href="https://www.cloudba.site/"
+         target="_blank" rel="noopener"
+         class="marquee__item">
+        <span class="marquee__img-wrap">
+          <img src="/assets/images/latest-cilent-showcase/example2-cilent.png"
+               alt="Client project 2" loading="lazy" />
+        </span>
+        <span class="marquee__tooltip">
+          <span class="marquee__tooltip-inner">
+            <span class="marquee__tooltip-title">www.cloudba.site</span>
+            <span class="marquee__tooltip-desc">A vibrant brand and booking site for BaBraids, an AfroLatina hairstylist and esthetician. Features a bold image gallery, online appointment scheduling, and a warm brand story rooted in culture, community, and 20+ years of experience.</span>
+            <span class="marquee__tooltip-cta" data-scroll-to="cta">Interested in a site like this?</span>
+          </span>
+        </span>
+      </a>
+
+      <a href="https://easydeals1.com/"
+         target="_blank" rel="noopener"
+         class="marquee__item">
+        <span class="marquee__img-wrap">
+          <img src="/assets/images/latest-cilent-showcase/example3-cilent.png"
+               alt="Client project 3" loading="lazy" />
+        </span>
+        <span class="marquee__tooltip">
+          <span class="marquee__tooltip-inner">
+            <span class="marquee__tooltip-title">easydeals1.com</span>
+            <span class="marquee__tooltip-desc">A clean, mobile-friendly auto dealership site for Easy Auto Sales in Plaistow, NH. Features a curated vehicle inventory browser, direct tap-to-call, Google Maps directions, and walk-in scheduling — built for high local conversion.</span>
+            <span class="marquee__tooltip-cta" data-scroll-to="cta">Interested in a site like this?</span>
+          </span>
+        </span>
+      </a>
+
+      <div class="marquee__item marquee__item--placeholder"><span class="marquee__img-wrap"></span></div>
+      <div class="marquee__item marquee__item--placeholder"><span class="marquee__img-wrap"></span></div>
+      <div class="marquee__item marquee__item--placeholder"><span class="marquee__img-wrap"></span></div>
+      <div class="marquee__item marquee__item--placeholder"><span class="marquee__img-wrap"></span></div>
+      <div class="marquee__item marquee__item--placeholder"><span class="marquee__img-wrap"></span></div>
+      <div class="marquee__item marquee__item--placeholder"><span class="marquee__img-wrap"></span></div>
+
+      <!-- duplicate set for seamless loop -->
+      <a href="https://home.eloysvalerio.workers.dev"
+         target="_blank" rel="noopener"
+         class="marquee__item">
+        <span class="marquee__img-wrap">
+          <img src="/assets/images/latest-cilent-showcase/example1-cilent.png"
+               alt="Client project 1" loading="lazy" />
+        </span>
+        <span class="marquee__tooltip">
+          <span class="marquee__tooltip-inner">
+            <span class="marquee__tooltip-title">home.eloysvalerio.workers.dev</span>
+            <span class="marquee__tooltip-desc">A high-end, custom talent portfolio built for actor and model Eloys Valerio. Features a modern 'bento-box' layout, a smooth dark-mode interface, and a built-in language switcher to effortlessly reach both English and Spanish-speaking casting directors.</span>
+            <span class="marquee__tooltip-cta" data-scroll-to="cta">Interested in a site like this?</span>
+          </span>
+        </span>
+      </a>
+
+      <a href="https://www.cloudba.site/"
+         target="_blank" rel="noopener"
+         class="marquee__item">
+        <span class="marquee__img-wrap">
+          <img src="/assets/images/latest-cilent-showcase/example2-cilent.png"
+               alt="Client project 2" loading="lazy" />
+        </span>
+        <span class="marquee__tooltip">
+          <span class="marquee__tooltip-inner">
+            <span class="marquee__tooltip-title">www.cloudba.site</span>
+            <span class="marquee__tooltip-desc">A vibrant brand and booking site for BaBraids, an AfroLatina hairstylist and esthetician. Features a bold image gallery, online appointment scheduling, and a warm brand story rooted in culture, community, and 20+ years of experience.</span>
+            <span class="marquee__tooltip-cta" data-scroll-to="cta">Interested in a site like this?</span>
+          </span>
+        </span>
+      </a>
+
+      <a href="https://easydeals1.com/"
+         target="_blank" rel="noopener"
+         class="marquee__item">
+        <span class="marquee__img-wrap">
+          <img src="/assets/images/latest-cilent-showcase/example3-cilent.png"
+               alt="Client project 3" loading="lazy" />
+        </span>
+        <span class="marquee__tooltip">
+          <span class="marquee__tooltip-inner">
+            <span class="marquee__tooltip-title">easydeals1.com</span>
+            <span class="marquee__tooltip-desc">A clean, mobile-friendly auto dealership site for Easy Auto Sales in Plaistow, NH. Features a curated vehicle inventory browser, direct tap-to-call, Google Maps directions, and walk-in scheduling — built for high local conversion.</span>
+            <span class="marquee__tooltip-cta" data-scroll-to="cta">Interested in a site like this?</span>
+          </span>
+        </span>
+      </a>
+
+      <div class="marquee__item marquee__item--placeholder"><span class="marquee__img-wrap"></span></div>
+      <div class="marquee__item marquee__item--placeholder"><span class="marquee__img-wrap"></span></div>
+      <div class="marquee__item marquee__item--placeholder"><span class="marquee__img-wrap"></span></div>
+      <div class="marquee__item marquee__item--placeholder"><span class="marquee__img-wrap"></span></div>
+      <div class="marquee__item marquee__item--placeholder"><span class="marquee__img-wrap"></span></div>
+      <div class="marquee__item marquee__item--placeholder"><span class="marquee__img-wrap"></span></div>
+
+    </div>
+    <button class="marquee__arrow marquee__arrow--next" type="button" aria-label="Next project" aria-controls="boxesTrack">
+      <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">
+        <path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </section>
+
+  <!-- ================================================================== -->
+  <!--  PRICING                                                            -->
+  <!-- ================================================================== -->
+  <section class="pricing-section" id="pricing">
+    <div class="pricing-section__inner">
+      <h2 class="section-heading">Pricing &amp;<br />Web Partnerships</h2>
+      <div class="pricing-section__grid">
+
+        <div class="plan-card">
+          <h3 class="plan-card__headline">01 // Social &amp; Creator</h3>
+          <div class="plan-card__price">$299</div>
+          <div class="plan-card__price-sub">Flat &middot; One-Time Payment</div>
+          <ul class="plan-card__features">
+            <li>Keep your website forever <small>(Avoid yearly payments from other providers)</small></li>
+            <li>Custom 1-Page Structural Layout</li>
+            <li>Optimized Link-in-Bio Presentation</li>
+            <li>Fast Static Cloud Hosting</li>
+            <li>Pay-As-You-Go Updates <small>($10 per text/link change)</small></li>
+          </ul>
+          <button type="button" class="plan-card__cta" data-checkout-plan="social">Get Started</button>
+        </div>
+
+        <div class="plan-card plan-card--featured">
+          <h3 class="plan-card__headline">02 // Local Business</h3>
+          <div class="plan-card__prices">
+            <div class="plan-card__price">$649</div>
+            <div class="plan-card__price-sub">$15/mo Maintenance (optional)</div>
+          </div>
+          <ul class="plan-card__features">
+            <li>Complete 3-5 Page Custom Code Build</li>
+            <li>Custom Website Domain <small>(if available)</small></li>
+            <li>Custom CMS (Add products &amp; manage content easily)</li>
+            <li>High-Speed Mobile-Responsive Grid Layout</li>
+            <li>Advanced Local SEO Baseline Configuration</li>
+            <li>Branding Redesign <small>(if requested)</small></li>
+            <li>"Text-Me-Updates" Line <small>(1 hr of monthly edits included)</small></li>
+          </ul>
+          <a href="#cta" class="plan-card__cta">Get Started</a>
+        </div>
+
+        <div class="plan-card">
+          <h3 class="plan-card__headline">03 // Custom Architecture</h3>
+          <div class="plan-card__price plan-card__price--bespoke">Bespoke</div>
+          <div class="plan-card__price-sub">Pricing Based on Scope</div>
+          <ul class="plan-card__features">
+            <li>Full-Scale E-Commerce &amp; Stripe Integrations</li>
+            <li>Advanced Dynamic Web Applications</li>
+            <li>Custom CMS &amp; Database Configurations</li>
+            <li>Premium Performance Optimization &amp; Scaling</li>
+            <li>Tailored Technical Consultation</li>
+          </ul>
+          <a href="#cta" class="plan-card__cta">Start Discovery</a>
+        </div>
+
+      </div>
+      <p class="pricing-section__note">Have a unique project architecture? Custom plans available on request.</p>
+    </div>
+  </section>
+
+  <!-- ================================================================== -->
+  <!--  WHY CHOOSE ME                                                      -->
+  <!-- ================================================================== -->
+  <section class="why" id="why">
+    <div class="why__inner">
+      <h2 class="section-heading section-heading--tight">Why Work With Me</h2>
+    </div>
+    <div class="marquee marquee--text" aria-label="Typography variations of javidmedina">
+      <div class="marquee__track" aria-hidden="true">
+        <img src="/assets/images/infinite-marquee/javidmedina-1.svg" alt="Javid Medina typography" class="marquee__item" />
+        <img src="/assets/images/infinite-marquee/javidmedina-2.svg" alt="Javid Medina typography" class="marquee__item" />
+        <img src="/assets/images/infinite-marquee/javidmedina-3.svg" alt="Javid Medina typography" class="marquee__item" />
+        <img src="/assets/images/infinite-marquee/javidmedina-4.svg" alt="Javid Medina typography" class="marquee__item" />
+        <img src="/assets/images/infinite-marquee/javidmedina-5.svg" alt="Javid Medina typography" class="marquee__item" />
+        <img src="/assets/images/infinite-marquee/javidmedina-6.svg" alt="Javid Medina typography" class="marquee__item" />
+        <img src="/assets/images/infinite-marquee/javidmedina-7.svg" alt="Javid Medina typography" class="marquee__item" />
+        <img src="/assets/images/infinite-marquee/javidmedina-8.svg" alt="Javid Medina typography" class="marquee__item" />
+        <img src="/assets/images/infinite-marquee/javidmedina-9.svg" alt="Javid Medina typography" class="marquee__item" />
+        <img src="/assets/images/infinite-marquee/javidmedina-1.svg" alt="Javid Medina typography" class="marquee__item" />
+        <img src="/assets/images/infinite-marquee/javidmedina-2.svg" alt="Javid Medina typography" class="marquee__item" />
+        <img src="/assets/images/infinite-marquee/javidmedina-3.svg" alt="Javid Medina typography" class="marquee__item" />
+        <img src="/assets/images/infinite-marquee/javidmedina-4.svg" alt="Javid Medina typography" class="marquee__item" />
+        <img src="/assets/images/infinite-marquee/javidmedina-5.svg" alt="Javid Medina typography" class="marquee__item" />
+        <img src="/assets/images/infinite-marquee/javidmedina-6.svg" alt="Javid Medina typography" class="marquee__item" />
+        <img src="/assets/images/infinite-marquee/javidmedina-7.svg" alt="Javid Medina typography" class="marquee__item" />
+        <img src="/assets/images/infinite-marquee/javidmedina-8.svg" alt="Javid Medina typography" class="marquee__item" />
+        <img src="/assets/images/infinite-marquee/javidmedina-9.svg" alt="Javid Medina typography" class="marquee__item" />
+      </div>
+    </div>
+    <div class="why__inner">
+      <div class="why__grid">
+        <div class="why-card">
+          <h3 class="why-card__headline">100% Custom Design &amp; Code</h3>
+          <p class="why-card__text">
+            No page builders or clunky templates. Every line of code is written with thought in mind to ensure your site is lightweight, unique, and built to perform.
+          </p>
+        </div>
+        <div class="why-card">
+          <h3 class="why-card__headline">You Own Everything</h3>
+          <p class="why-card__text">
+            No recurring platform lock-ins or monthly builder subscriptions. Pay once, own your site outright, and keep it forever.
+          </p>
+        </div>
+        <div class="why-card">
+          <h3 class="why-card__headline">Direct Text Support</h3>
+          <p class="why-card__text">
+            No support tickets or automated bots. Need a fast text update, link swap, or addition? Text me directly and it&rsquo;s handled.
+          </p>
+        </div>
+        <div class="why-card">
+          <h3 class="why-card__headline">Scalable &amp; Integration Ready</h3>
+          <p class="why-card__text">
+            From Stripe payment links and custom databases to CMS backends, your site is modularly built to scale effortlessly as your business grows.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================================== -->
+  <!--  OTHER WORK                                                         -->
+  <!-- ================================================================== -->
+  <section class="other-work" id="work">
+    <div class="other-work__inner">
+      <h2 class="section-heading">Other Work</h2>
+      <div class="other-work__grid">
+        <div class="project-card project-card--soon">
+          <span class="project-card__placeholder"></span>
+          <span class="project-card__badge">Coming Soon</span>
+        </div>
+        <div class="project-card project-card--soon">
+          <span class="project-card__placeholder"></span>
+          <span class="project-card__badge">Coming Soon</span>
+        </div>
+        <div class="project-card project-card--soon">
+          <span class="project-card__placeholder"></span>
+          <span class="project-card__badge">Coming Soon</span>
+        </div>
+        <div class="project-card project-card--soon">
+          <span class="project-card__placeholder"></span>
+          <span class="project-card__badge">Coming Soon</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================================== -->
+  <!--  TECH BANNER                                                        -->
+  <!-- ================================================================== -->
+  <section class="tech-banner">
+    <div class="tech-banner__inner">
+      <p class="tech-banner__text">
+        Built with modern web technologies and lightning-fast hosting for maximum speed, security, and performance. Based in the US, serving clients worldwide.
+      </p>
+    </div>
+  </section>
+
+  <!-- ================================================================== -->
+  <!--  CTA                                                                -->
+  <!-- ================================================================== -->
+  <section class="cta-section" id="cta">
+    <div class="cta-section__inner">
+      <h2 class="section-heading">Got a project<br />in mind?</h2>
+      <p class="cta-section__sub">Let&rsquo;s build it together. Fill out the form and I&rsquo;ll get back to you within 24 hours.</p>
+
+      <!-- ---- form ---- -->
+      <form class="cta-form" id="ctaForm">
+        <div class="cta-form__fields">
+          <input type="text" class="cta-form__input" id="ctaName" placeholder="Your name" required />
+          <input type="email" class="cta-form__input" id="ctaEmail" placeholder="your@email.com" required />
+          <input type="tel" class="cta-form__input" id="ctaPhone" placeholder="Phone number" />
+          <select class="cta-form__input" id="ctaTier">
+            <option value="">I&rsquo;m interested in&hellip;</option>
+            <option value="Social & Creator">01 // Social &amp; Creator — $299</option>
+            <option value="Local Business">02 // Local Business — $649</option>
+            <option value="Custom Architecture">03 // Custom Architecture — Bespoke</option>
+          </select>
+          <textarea class="cta-form__textarea" id="ctaDescription" placeholder="Describe your website — what you do, the pages you need, the vibe you're going for..."></textarea>
+          <div class="cta-form__file-area">
+            <input type="file" class="cta-form__file-input" id="ctaImages" multiple accept="image/*" />
+            <label class="cta-form__file-label" for="ctaImages">
+              <span>&#x1F5BC; Attach reference images</span>
+              <small>PNG, JPG, WEBP — screenshots, moodboards, inspo</small>
+            </label>
+            <ul class="cta-form__file-list" id="ctaFileList"></ul>
+          </div>
+          <label class="cta-form__check">
+            <input type="checkbox" id="ctaDomain" />
+            <span class="cta-form__check-mark"></span>
+            <span>I have my own custom domain</span>
+          </label>
+
+          <div id="domainSearchPanel" class="domain-search" hidden>
+            <p class="domain-search__hint">Need a domain? Search and buy one now — it's a separate, instant payment (not tied to submitting this form).</p>
+            <div class="domain-search__row">
+              <input type="text" id="domainQuery" class="cta-form__input" placeholder="e.g. mybrand.com" />
+              <button type="button" id="domainSearchBtn">Search</button>
+            </div>
+            <div id="domainResults" class="domain-search__results"></div>
+            <div id="domainSelected" class="domain-search__selected" hidden></div>
+            <button type="button" id="domainPayBtn" class="plan-card__cta">Pay for Domain</button>
+          </div>
+        </div>
+        <button type="submit" class="cta-form__submit" id="ctaSubmit">Submit</button>
+        <p class="cta-form__feedback" id="ctaFeedback"></p>
+      </form>
+    </div>
+  </section>
+
+  <!-- ================================================================== -->
+  <!--  FOOTER                                                             -->
+  <!-- ================================================================== -->
+  <footer class="footer" id="contact">
+    <div class="footer__inner">
+      <div class="footer__col">
+        <h4 class="footer__heading">Javid Medina</h4>
+        <p class="footer__text">Custom web development for creators &amp; businesses. Built by hand, delivered with care.</p>
+      </div>
+      <div class="footer__col">
+        <h4 class="footer__heading">Services</h4>
+        <ul class="footer__links">
+          <li><a href="#pricing">Social &amp; Creator</a></li>
+          <li><a href="#pricing">Local Business</a></li>
+          <li><a href="#pricing">Custom Architecture</a></li>
+          <li><a href="#why">Maintenance</a></li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <h4 class="footer__heading">Contact</h4>
+        <ul class="footer__links">
+          <li><a href="mailto:javidamedina@gmail.com">Email</a></li>
+          <li><a href="https://instagram.com/javid_medina" target="_blank" rel="noopener">Instagram</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <p>&copy; 2026 Javid Medina &nbsp;&middot;&nbsp; <a href="/terms.html">Legal // Terms</a></p>
+    </div>
+  </footer>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
