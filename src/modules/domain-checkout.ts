@@ -95,8 +95,20 @@ export function initDomainCheckout(): void {
     }
   });
 
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
   payBtn.addEventListener('click', async () => {
     if (!selected) return;
+
+    // Required (also enforced server-side): a domain purchase with no
+    // reachable email is unrecoverable if registration fails or a
+    // renewal reminder is ever needed.
+    const email = emailInput?.value.trim() ?? '';
+    if (!emailPattern.test(email)) {
+      window.alert('Enter your email above first — the domain receipt and registration confirmation go there.');
+      emailInput?.focus();
+      return;
+    }
 
     const originalLabel = payBtn.textContent;
     payBtn.disabled = true;
@@ -106,7 +118,7 @@ export function initDomainCheckout(): void {
       const res = await fetch('/api/create-domain-checkout-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ domain: selected.name, email: emailInput?.value.trim() || undefined }),
+        body: JSON.stringify({ domain: selected.name, email }),
       });
       const data = (await res.json()) as { url?: string; error?: string };
       if (!res.ok || !data.url) throw new Error(data.error ?? 'Checkout failed');

@@ -37,7 +37,18 @@ function cfHeaders(env: Env): HeadersInit {
 
 function applyMarkup(costDollars: string, markupPercent: string): { costCents: number; priceCents: number } {
   const costCents = Math.round(parseFloat(costDollars) * 100);
-  const pct = parseFloat(markupPercent || '0');
+
+  // A missing/unparseable markup must fail loudly, not silently sell
+  // domains at Cloudflare's raw cost with zero margin. An explicit "0"
+  // (deliberately no markup) is a valid choice and passes through fine.
+  if (markupPercent === undefined || markupPercent === null || markupPercent.trim() === '') {
+    throw new Error('DOMAIN_MARKUP_PERCENT is not configured');
+  }
+  const pct = parseFloat(markupPercent);
+  if (Number.isNaN(pct)) {
+    throw new Error(`DOMAIN_MARKUP_PERCENT is not a valid number: "${markupPercent}"`);
+  }
+
   const priceCents = Math.round(costCents * (1 + pct / 100));
   return { costCents, priceCents };
 }

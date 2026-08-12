@@ -20,6 +20,15 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     return Response.json({ error: 'Missing or invalid "domain"' }, { status: 400 });
   }
 
+  // Required, not optional: a domain purchase with no email on file is
+  // unrecoverable if we can't reach the buyer (registration failure,
+  // renewal reminders, etc.) — never trust client-side-only validation
+  // for this, enforce it here too.
+  const email = body.email?.trim();
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return Response.json({ error: 'A valid "email" is required to purchase a domain' }, { status: 400 });
+  }
+
   // Re-check price/availability server-side right before charging —
   // never trust a price the client sent, and availability can change
   // between when they searched and when they pay.
@@ -44,7 +53,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   try {
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
-      customer_email: body.email,
+      customer_email: email,
       line_items: [
         {
           quantity: 1,

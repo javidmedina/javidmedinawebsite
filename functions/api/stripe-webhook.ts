@@ -40,6 +40,39 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
     const result = await registerDomain(env, domain);
 
+    // Registration can fail after payment already succeeded — e.g. it
+    // got registered by someone else in the gap between our last
+    // availability check and Stripe capturing payment. Refund
+    // automatically rather than leaving the client charged for a
+    // domain they don't have; don't wait on a manual fix.
+    const refund: { attempted: boolean; succeeded: boolean; detail?: unknown } = {
+      attempted: false,
+      succeeded: false,
+    };
+
+    if (!result.ok) {
+      refund.attempted = true;
+      const paymentIntentId =
+        typeof session.payment_intent === 'string' ? session.payment_intent : session.payment_intent?.id;
+
+      if (!paymentIntentId) {
+        console.error('Cannot auto-refund domain purchase — no payment_intent on session:', session.id);
+        refund.detail = 'no payment_intent on session';
+      } else {
+        try {
+          const stripeRefund = await stripe.refunds.create({
+            payment_intent: paymentIntentId,
+            reason: 'requested_by_customer',
+          });
+          refund.succeeded = stripeRefund.status === 'succeeded' || stripeRefund.status === 'pending';
+          refund.detail = { id: stripeRefund.id, status: stripeRefund.status };
+        } catch (refundErr) {
+          console.error('Auto-refund failed for domain purchase:', domain, refundErr);
+          refund.detail = refundErr instanceof Error ? refundErr.message : String(refundErr);
+        }
+      }
+    }
+
     await notifyOwner(env, 'domain_registration', {
       domain,
       email: customerEmail,
@@ -48,13 +81,23 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       stripeSessionId: session.id,
       registrationSucceeded: result.ok,
       registrationDetail: result.detail,
+      refundAttempted: refund.attempted,
+      refundSucceeded: refund.succeeded,
+      refundDetail: refund.detail,
     });
 
     if (!result.ok) {
       // Payment already succeeded — surfacing this to the owner (above)
       // matters more than the HTTP response, since Stripe only cares
-      // that we returned 2xx so it stops retrying the webhook.
-      console.error('Domain registration failed after successful payment:', domain, result.detail);
+      // that we returned 2xx so it stops retrying the webhook. If the
+      // refund itself also failed, this line is the paper trail.
+      console.error(
+        'Domain registration failed after successful payment:',
+        domain,
+        result.detail,
+        'refund:',
+        refund,
+      );
     }
 
     return new Response('ok', { status: 200 });
