@@ -1,4 +1,13 @@
-# Migration: static HTML/CSS/JS → Vite + TypeScript + Tailwind + Stripe on Cloudflare Pages
+# Migration: static HTML/CSS/JS → Vite + TypeScript + Tailwind + Stripe on a Cloudflare Worker
+
+> **Update:** this project was originally migrated onto **Cloudflare Pages** (see the original
+> write-up below section 3). It was then converted to a plain **Cloudflare Worker** with a static
+> assets binding, because the actual Cloudflare project this repo deploys to (`home`) turned out to
+> already be a Worker, not a Pages project — Cloudflare Pages Functions (`functions/api/*.ts`,
+> file-based routing) don't exist on Workers, so all four API routes were rewritten as plain
+> `(request, env) => Promise<Response>` handlers wired up by a manual router in `worker/index.ts`.
+> Sections below have been updated to match; historical/one-time steps (git repo setup, Stripe
+> product setup) are left as they were.
 
 ## What changed
 
@@ -14,20 +23,24 @@ src/
     marquee-text.ts              draggable text marquee (from script.js)
     marquee-boxes.ts             draggable box marquee + mobile carousel (from script.js)
     contact-form.ts              Google Sheets form submit (from script.js, unchanged endpoint)
-    checkout.ts                  NEW: generic Stripe Checkout trigger for fixed-price plans
-    domain-checkout.ts           NEW: domain search + instant Stripe Checkout for domains
-functions/
-  _lib.ts                       shared Env type, Stripe client, Cloudflare Registrar calls
-  api/create-checkout-session.ts        Stripe Checkout for the $299 plan
-  api/domain-search.ts                  Cloudflare Registrar search/check, with your markup applied
-  api/create-domain-checkout-session.ts Stripe Checkout for a specific domain (re-verifies price server-side)
-  api/stripe-webhook.ts                 verifies Stripe signature, registers the domain, emails you
-scripts/Code.gs                 extended (not replaced) — now also logs/emails Stripe payment events
-VARIENT/, assets/ (root)        untouched — your old source, safe to delete once you've confirmed
-                                 the new site locally (npm run dev / npm run pages:dev)
+    checkout.ts                  Stripe Checkout trigger for fixed-price plans
+    domain-checkout.ts           domain search + instant Stripe Checkout for domains
+    checkout-status.ts           post-Stripe-redirect confirmation/cancellation toast
+worker/
+  index.ts                      Worker entry point: fetch() handler, manual routing for /api/*,
+                                 falls back to env.ASSETS.fetch() for everything else
+  lib.ts                        shared Env type, Stripe client, Cloudflare Registrar calls
+  routes/
+    create-checkout-session.ts        Stripe Checkout for the $299 plan
+    domain-search.ts                  Cloudflare Registrar search/check, with your markup applied
+    create-domain-checkout-session.ts Stripe Checkout for a specific domain (re-verifies price server-side)
+    stripe-webhook.ts                 verifies Stripe signature, registers the domain, auto-refunds
+                                       on registration failure, emails you
+scripts/Code.gs                 extended (not replaced) — also logs/emails Stripe payment + refund events
 ```
 
-Typecheck and build were run and pass clean (`npm run typecheck`, `npm run build`).
+Typecheck and build were run and pass clean (`npm run typecheck`, `npm run build`), and every route
+was smoke-tested locally under `wrangler dev` before deploying.
 
 ---
 
@@ -45,16 +58,16 @@ the outer home-directory repo just won't descend into this folder once it has it
 ```bash
 git init
 git add .
-git commit -m "Migrate to Vite + TypeScript + Tailwind + Stripe/Cloudflare Pages"
+git commit -m "Migrate to Vite + TypeScript + Tailwind + Stripe/Cloudflare Worker"
 ```
 
 The `.gitignore` already excludes `node_modules/`, `dist/`, `.wrangler/`, and `.env`, so this is
-safe to run as-is. (I did not run this for you — happy to if you confirm.)
+safe to run as-is.
 
 Separately: the stray `C:\Users\javid\.git` with zero commits is harmless as long as nothing is ever
 committed/pushed from it. Worth deleting at some point (`rm -rf ~/.git` — but only when you're sure
 nothing else on your machine depends on it) to avoid future confusion, but that's outside this
-project and I'd want your explicit go-ahead before touching it.
+project.
 
 ## 2. Push to GitHub
 
@@ -67,23 +80,24 @@ git push -u origin main
 you don't have `gh` installed/authenticated, create the repo manually on github.com instead, then:
 `git remote add origin https://github.com/<you>/javidmedinawebsite.git && git push -u origin main`.)
 
-## 3. Cloudflare Pages: connect for automatic deploys
+## 3. Cloudflare: connect for automatic deploys (Workers Builds)
 
-1. Cloudflare dashboard → **Workers & Pages** → **Create** → **Pages** → **Connect to Git**.
-2. Pick the `javidmedinawebsite` GitHub repo.
-3. Build settings:
-   - Framework preset: **Vite**
-   - Build command: `npm run build`
-   - Build output directory: `dist`
-   - **Deploy command: `npx wrangler pages deploy dist`** — some dashboard flows default this
-     field to the plain `npx wrangler deploy` (a Workers-only command), which fails with
-     `It looks like you've run a Workers-specific command in a Pages project.` This is a
-     Pages project (`pages_build_output_dir` in `wrangler.toml`), so the deploy command must
-     use the `pages deploy` subcommand explicitly. If your build log's last line reads
-     `Executing user deploy command: npx wrangler deploy`, this is the field to fix.
-4. Deploy. Every push to `main` now redeploys automatically; PRs get preview URLs for free.
+This project deploys as a **Worker with a static assets binding**, not Cloudflare Pages. The
+existing `home` project in the dashboard (Workers & Pages → filter by "Workers") is already wired
+to this GitHub repo via Workers Builds.
 
-### Environment variables (Settings → Environment variables, for both Production and Preview)
+Build settings (Settings → Build configuration):
+- Build command: `npm run build`
+- **Deploy command: `npx wrangler deploy`** (not `wrangler pages deploy` — this is a Worker)
+- **API token**: Workers Builds auto-generates one, but its default permission set does **not**
+  include what a Pages-style project might need — if you ever see an `Authentication error
+  [code: 10000]` or `Project not found [code: 8000007]` on deploy, the fix is a custom token (see
+  `dash.cloudflare.com/profile/api-tokens`) with at least: Account → Workers Scripts (Edit),
+  Account → Account Settings (Read), User → User Details/Memberships (Read), Zone → Workers Routes
+  (Edit) — set as the project's `CLOUDFLARE_API_TOKEN`, and make sure its **Account Resources**
+  scope actually includes the account that owns this Worker.
+
+### Environment variables (Settings → Variables and Secrets)
 
 | Variable | Where it comes from |
 |---|---|
@@ -92,7 +106,7 @@ you don't have `gh` installed/authenticated, create the repo manually on github.
 | `STRIPE_PRICE_SOCIAL` | Stripe Dashboard → Product catalog (see step 4) |
 | `CF_REGISTRAR_ACCOUNT_ID` | Your Cloudflare account ID (dashboard URL or right sidebar) |
 | `CF_REGISTRAR_API_TOKEN` | Cloudflare Dashboard → Manage Account → API Tokens → create with "Registrar Write" |
-| `DOMAIN_MARKUP_PERCENT` | Your choice, e.g. `30` |
+| `DOMAIN_MARKUP_PERCENT` | Your choice, e.g. `30` — required; domain lookups now error loudly instead of silently selling at 0% margin if this is unset |
 | `FORM_NOTIFY_ENDPOINT` | Your existing Google Apps Script `/exec` URL (same one already in `contact-form.ts`) |
 
 Mark `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, and `CF_REGISTRAR_API_TOKEN` as **Secret**, not
@@ -125,19 +139,26 @@ This is a **beta** API — behavior may still change. Before it'll work:
 
 **Renewal is not automated.** The registration response comes back with `auto_renew: false`. This
 integration handles the first-year purchase; deciding whether/how to renew (and whether to re-bill
-the client) is a separate decision — I didn't want to guess at a recurring-billing scheme on your
-behalf.
+the client) is a separate decision.
+
+**Registration failures after payment auto-refund.** If Cloudflare registration fails after Stripe
+payment succeeds (e.g. lost a race to another buyer for the same domain), `stripe-webhook.ts`
+refunds automatically via the Stripe API rather than leaving the client charged with nothing —
+refund outcome is logged/emailed alongside the registration status.
 
 ## 6. Local development
 
 ```bash
 npm install
-npm run dev          # http://localhost:5173 — frontend only, hot reload, no Functions
-npm run pages:dev     # http://localhost:8788 — full site + /api/* Functions via wrangler
+npm run dev          # http://localhost:5173 — frontend only, hot reload, no Worker routes
+npm run worker:dev    # builds, then runs the full site + /api/* routes via `wrangler dev`
 ```
 
-For `pages:dev` to actually hit Stripe/Cloudflare Registrar locally, copy `.env.example` to `.env`
+For `worker:dev` to actually hit Stripe/Cloudflare Registrar locally, copy `.env.example` to `.env`
 and fill in real (test-mode) values.
+
+`npm run deploy` builds and runs `wrangler deploy` directly, if you ever want to deploy manually
+instead of via the git-connected Workers Builds pipeline.
 
 ## 7. Mobile-responsive CSS: why Tailwind wasn't used to rewrite everything
 
@@ -147,23 +168,21 @@ starting from zero. Rewriting ~1400 lines of tuned, working CSS into Tailwind ut
 no visual regression testing loop is a good way to quietly break things that currently work.
 
 What I did instead: kept `legacy.css` as-is (imported first), added Tailwind on top via
-`@tailwind base/components/utilities`, and used Tailwind utilities only for the genuinely new
-domain-search widget. Its breakpoint convention (`sm:`, `md:`, etc., all `min-width`, mobile-first)
-is now available for anything new you build — you're not locked into the old file's `max-width`
-(desktop-first) pattern going forward, just carrying it for what already exists.
+`@tailwind base/components/utilities`, and used Tailwind utilities only for genuinely new
+components (the domain-search widget, the checkout status toast). Its breakpoint convention
+(`sm:`, `md:`, etc., all `min-width`, mobile-first) is now available for anything new you build —
+you're not locked into the old file's `max-width` (desktop-first) pattern going forward, just
+carrying it for what already exists.
 
 If you do want the old stylesheet converted to Tailwind utilities section-by-section later, that's
 a real project best done with the dev server open and a visual diff at each step — worth scoping
 separately rather than doing blind.
 
-## Loose ends worth your attention
+## Known behavior difference from the old Pages setup
 
-- **Pricing mismatch**: the homepage lists the Social & Creator plan at **$299**, but
-  `terms.html` § 02 still says **$199** for the same package (and describes a 4-month payment
-  plan option for Local Business that isn't reflected on the pricing cards). I didn't touch the
-  legal copy — just flagging the inconsistency so it doesn't ship silently.
-- **`assets/` at the repo root** duplicates `VARIENT/assets/` byte-for-byte — leftover from before.
-  Safe to delete once you're confident the new `public/assets/` copy is complete.
-- Only the **Social & Creator** plan is wired to instant Stripe checkout. Local Business and Custom
-  Architecture still route to the contact form — those involve scope/consultation before a fixed
-  price makes sense, so I left them as-is rather than force a checkout button onto a bespoke quote.
+Cloudflare's static-asset serving for Workers defaults to redirecting `/terms.html` → `/terms`
+(307). Content is identical either way and browsers follow it transparently, but it's a real
+difference from before (Pages served the exact path with no redirect). Pinning
+`html_handling = "none"` in `wrangler.toml` avoids that redirect, but it also disables the
+`/` → `index.html` mapping and breaks the homepage — not worth that tradeoff for one cosmetic
+redirect, so it's left at the default.

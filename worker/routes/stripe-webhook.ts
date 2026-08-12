@@ -1,8 +1,7 @@
 import Stripe from 'stripe';
-import { getStripe, registerDomain, notifyOwner, type Env } from '../_lib';
+import { getStripe, registerDomain, notifyOwner, type Env } from '../lib';
 
-export const onRequestPost: PagesFunction<Env> = async (context) => {
-  const { request, env } = context;
+export async function handleStripeWebhook(request: Request, env: Env): Promise<Response> {
   const stripe = getStripe(env);
 
   const signature = request.headers.get('stripe-signature');
@@ -115,4 +114,4 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   }
 
   return new Response('ok', { status: 200 });
-};
+}

@@ -7,10 +7,10 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "typecheck": "tsc --noEmit && tsc --noEmit -p functions/tsconfig.json",
-    "functions:types": "wrangler types",
-    "pages:dev": "npm run build && wrangler pages dev dist",
-    "deploy": "npm run build && wrangler pages deploy dist"
+    "typecheck": "tsc --noEmit && tsc --noEmit -p worker/tsconfig.json",
+    "worker:types": "wrangler types",
+    "worker:dev": "npm run build && wrangler dev",
+    "deploy": "npm run build && wrangler deploy"
   },
   "dependencies": {
     "stripe": "^17.4.0"

@@ -1,13 +1,11 @@
-import { checkDomain, getStripe, type Env } from '../_lib';
+import { checkDomain, getStripe, type Env } from '../lib';
 
 interface DomainCheckoutBody {
   domain?: string;
   email?: string;
 }
 
-export const onRequestPost: PagesFunction<Env> = async (context) => {
-  const { request, env } = context;
-
+export async function handleCreateDomainCheckoutSession(request: Request, env: Env): Promise<Response> {
   let body: DomainCheckoutBody;
   try {
     body = await request.json();
@@ -81,8 +79,4 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     console.error('Stripe domain checkout session creation failed:', err);
     return Response.json({ error: 'Failed to create checkout session' }, { status: 500 });
   }
-};
-
-export const onRequestGet: PagesFunction<Env> = async () => {
-  return Response.json({ error: 'Method not allowed' }, { status: 405 });
-};
+}
