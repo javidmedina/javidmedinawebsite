@@ -19,6 +19,23 @@
   @apply opacity-60 cursor-not-allowed;
 }
 
+/* New: post-Stripe-redirect confirmation/cancellation banner */
+.checkout-banner {
+  @apply sticky top-0 z-50 flex items-center justify-center gap-4 px-4 py-3 text-center text-sm font-medium text-white;
+}
+
+.checkout-banner--success {
+  @apply bg-[#2e7d32];
+}
+
+.checkout-banner--cancelled {
+  @apply bg-[#c62828];
+}
+
+.checkout-banner__close {
+  @apply text-lg leading-none opacity-80 transition-opacity hover:opacity-100;
+}
+
 /* New: domain search + instant-checkout widget in the CTA form */
 .domain-search {
   @apply mt-3 flex flex-col gap-3 rounded-lg border border-black/10 p-4;
