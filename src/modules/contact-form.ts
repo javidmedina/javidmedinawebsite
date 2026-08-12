@@ -77,7 +77,7 @@ export function initContactForm(): void {
     })
       .then(() => {
         if (feedback) {
-          feedback.textContent = 'Submitted — we’ll be in touch soon.';
+          feedback.textContent = 'Submitted, we’ll be in touch soon.';
           feedback.className = 'cta-form__feedback cta-form__feedback--success';
         }
         if (submit) submit.textContent = 'SUBMITTED';

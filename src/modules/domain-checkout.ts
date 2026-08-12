@@ -44,8 +44,8 @@ export function initDomainCheckout(): void {
 
       const label = document.createElement('span');
       label.textContent = r.available
-        ? `${r.name} — ${formatPrice(r.priceCents, r.currency)}/yr`
-        : `${r.name} — unavailable`;
+        ? `${r.name}, ${formatPrice(r.priceCents, r.currency)}/yr`
+        : `${r.name}, unavailable`;
 
       row.appendChild(label);
 
@@ -64,7 +64,7 @@ export function initDomainCheckout(): void {
   function selectDomain(result: DomainSearchResult): void {
     selected = result;
     selectedEl!.hidden = false;
-    selectedEl!.textContent = `Selected: ${result.name} — ${formatPrice(result.priceCents, result.currency)}/yr`;
+    selectedEl!.textContent = `Selected: ${result.name}, ${formatPrice(result.priceCents, result.currency)}/yr`;
   }
 
   async function runSearch(): Promise<void> {
@@ -105,7 +105,7 @@ export function initDomainCheckout(): void {
     // renewal reminder is ever needed.
     const email = emailInput?.value.trim() ?? '';
     if (!emailPattern.test(email)) {
-      window.alert('Enter your email above first — the domain receipt and registration confirmation go there.');
+      window.alert('Enter your email above first, the domain receipt and registration confirmation go there.');
       emailInput?.focus();
       return;
     }

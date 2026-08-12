@@ -19,16 +19,16 @@ export function initCheckoutStatus(): void {
   let kind: 'success' | 'cancelled' | null = null;
 
   if (checkout === 'success') {
-    message = "Payment received — thanks! I'll be in touch shortly to kick off your project.";
+    message = "Payment received, thanks! I'll be in touch shortly to kick off your project.";
     kind = 'success';
   } else if (checkout === 'cancelled') {
-    message = 'Checkout was cancelled — no charge was made. Feel free to try again whenever you’re ready.';
+    message = 'Checkout was cancelled, no charge was made. Feel free to try again whenever you’re ready.';
     kind = 'cancelled';
   } else if (domainCheckout === 'success') {
-    message = "Domain payment received — I'll register it and follow up by email once it's live.";
+    message = "Domain payment received, I'll register it and follow up by email once it's live.";
     kind = 'success';
   } else if (domainCheckout === 'cancelled') {
-    message = 'Domain checkout was cancelled — no charge was made.';
+    message = 'Domain checkout was cancelled, no charge was made.';
     kind = 'cancelled';
   }
 
