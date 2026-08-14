@@ -73,21 +73,27 @@ export async function checkDomain(env: Env, domain: string): Promise<DomainPrici
   const json = (await res.json()) as {
     success: boolean;
     errors?: Array<{ code: number; message: string }>;
-    result?: Array<{
-      name: string;
-      registrable: boolean;
-      reason?: string;
-      pricing?: { currency: string; registration_cost: string };
-    }>;
+    // Cloudflare nests the array one level deeper than the usual bare
+    // `result: [...]` convention for this endpoint - confirmed against
+    // the Registrar API docs after a live 200/empty-result response
+    // exposed the mismatch.
+    result?: {
+      domains?: Array<{
+        name: string;
+        registrable: boolean;
+        reason?: string;
+        pricing?: { currency: string; registration_cost: string };
+      }>;
+    };
   };
 
-  if (!json.success || !json.result?.length) {
+  if (!json.success || !json.result?.domains?.length) {
     throw new Error(
       `Cloudflare domain-check request failed (HTTP ${res.status}): ${JSON.stringify(json.errors ?? json)}`,
     );
   }
 
-  const result = json.result[0];
+  const result = json.result.domains[0];
   const { costCents, priceCents } = applyMarkup(
     result.pricing?.registration_cost ?? '0',
     env.DOMAIN_MARKUP_PERCENT,
@@ -111,21 +117,23 @@ export async function searchDomains(env: Env, query: string, limit = 8): Promise
   const json = (await res.json()) as {
     success: boolean;
     errors?: Array<{ code: number; message: string }>;
-    result?: Array<{
-      name: string;
-      registrable: boolean;
-      reason?: string;
-      pricing?: { currency: string; registration_cost: string };
-    }>;
+    result?: {
+      domains?: Array<{
+        name: string;
+        registrable: boolean;
+        reason?: string;
+        pricing?: { currency: string; registration_cost: string };
+      }>;
+    };
   };
 
-  if (!json.success || !json.result) {
+  if (!json.success || !json.result?.domains) {
     throw new Error(
       `Cloudflare domain-search request failed (HTTP ${res.status}): ${JSON.stringify(json.errors ?? json)}`,
     );
   }
 
-  return json.result.map((r) => {
+  return json.result.domains.map((r) => {
     const { costCents, priceCents } = applyMarkup(r.pricing?.registration_cost ?? '0', env.DOMAIN_MARKUP_PERCENT);
     return {
       name: r.name,
