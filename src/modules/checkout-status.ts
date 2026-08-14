@@ -26,7 +26,7 @@ export function initCheckoutStatus(): void {
     kind = 'cancelled';
   } else if (domainCheckout === 'success') {
     message =
-      "Domain payment received, I'll register it and follow up by email once it's live. Questions in the meantime? Call or text 978-802-0051.";
+      "Domain payment received, I'll register it now — billed yearly going forward. See the section below to tell me how you'd like it connected. Questions? Call or text 978-802-0051.";
     kind = 'success';
   } else if (domainCheckout === 'cancelled') {
     message = 'Domain checkout was cancelled, no charge was made.';

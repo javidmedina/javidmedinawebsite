@@ -41,6 +41,7 @@ export async function handleCreateCheckoutSession(request: Request, env: Env): P
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
       payment_method_types: ['card'],
+      phone_number_collection: { enabled: true },
       line_items: [{ price: priceId, quantity: 1 }],
       success_url: `${origin}/?checkout=success`,
       cancel_url: `${origin}/?checkout=cancelled`,

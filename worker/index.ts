@@ -1,6 +1,8 @@
 import type { Env } from './lib';
 import { handleCreateCheckoutSession } from './routes/create-checkout-session';
 import { handleCreateDomainCheckoutSession } from './routes/create-domain-checkout-session';
+import { handleDomainCheckoutDetails } from './routes/domain-checkout-details';
+import { handleDomainHandoff } from './routes/domain-handoff';
 import { handleDomainSearch } from './routes/domain-search';
 import { handleStripeWebhook } from './routes/stripe-webhook';
 
@@ -19,6 +21,8 @@ import { handleStripeWebhook } from './routes/stripe-webhook';
 const routes: Record<string, Record<string, (request: Request, env: Env) => Promise<Response>>> = {
   '/api/create-checkout-session': { POST: handleCreateCheckoutSession },
   '/api/create-domain-checkout-session': { POST: handleCreateDomainCheckoutSession },
+  '/api/domain-checkout-details': { GET: handleDomainCheckoutDetails },
+  '/api/domain-handoff': { POST: handleDomainHandoff },
   '/api/domain-search': { GET: handleDomainSearch },
   '/api/stripe-webhook': { POST: handleStripeWebhook },
 };

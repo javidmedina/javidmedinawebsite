@@ -43,6 +43,38 @@
   </header>
 
   <!-- ================================================================== -->
+  <!--  DOMAIN PURCHASE CONFIRMATION (shown after a successful domain      -->
+  <!--  Stripe Checkout redirect; populated from /api/domain-checkout-     -->
+  <!--  details, see src/modules/domain-purchase-confirmation.ts)          -->
+  <!-- ================================================================== -->
+  <section id="domainPurchasePanel" class="domain-purchase-panel" hidden>
+    <div class="domain-purchase-panel__inner">
+      <h2 class="domain-purchase-panel__title">Your domain is secured</h2>
+      <p class="domain-purchase-panel__summary" id="domainPurchaseSummary"></p>
+      <p class="domain-purchase-panel__hint">
+        This domain is registered under my Cloudflare account as part of your build, the same as everyone else's, so I need to know how you'd like it connected to your site.
+      </p>
+      <textarea
+        id="domainPurchaseNotes"
+        class="cta-form__textarea domain-purchase-panel__notes"
+        placeholder="Anything I should know, e.g. which project this is for (optional)"
+      ></textarea>
+      <div class="domain-purchase-panel__actions">
+        <button type="button" id="domainHandoffOwnerBtn" class="domain-purchase-panel__btn domain-purchase-panel__btn--primary">
+          Send it to Javid to link it (recommended)
+        </button>
+        <button type="button" id="domainHandoffSelfBtn" class="domain-purchase-panel__btn domain-purchase-panel__btn--secondary">
+          I'll manage it myself
+        </button>
+      </div>
+      <p class="domain-purchase-panel__note">
+        Heads up: since the domain lives under my account, "manage it myself" still starts with me handing off access or transferring it out, picking an option just tells me which conversation to start. Either way I'll follow up by email.
+      </p>
+      <p id="domainPurchaseFeedback" class="domain-purchase-panel__feedback" role="status"></p>
+    </div>
+  </section>
+
+  <!-- ================================================================== -->
   <!--  HERO                                                               -->
   <!-- ================================================================== -->
   <section class="hero" id="hero">
@@ -424,7 +456,7 @@
           </label>
 
           <div id="domainSearchPanel" class="domain-search" hidden>
-            <p class="domain-search__hint">Need a domain? Search and buy one now, it's a separate, instant payment (not tied to submitting this form). Fill in your email above first, that's where the receipt and registration confirmation go. The domain is registered and managed under my account as part of your build, questions anytime at 978-802-0051.</p>
+            <p class="domain-search__hint">Need a domain? Search and buy one now, it's billed separately from this form as a yearly subscription (the domain's registration price plus a service markup), charged again automatically each year for as long as you keep it. Fill in your email above first, that's where the receipt and renewal confirmations go, and you'll be asked for a phone number during checkout too. The domain is registered and managed under my account as part of your build, questions anytime at 978-802-0051.</p>
             <div class="domain-search__row">
               <input type="text" id="domainQuery" class="cta-form__input" placeholder="e.g. mybrand.com" />
               <button type="button" id="domainSearchBtn">Search</button>
