@@ -51,6 +51,7 @@ export async function handleCreateDomainCheckoutSession(request: Request, env: E
   try {
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
+      payment_method_types: ['card'],
       customer_email: email,
       line_items: [
         {
