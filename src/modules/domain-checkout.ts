@@ -65,6 +65,7 @@ export function initDomainCheckout(): void {
     selected = result;
     selectedEl!.hidden = false;
     selectedEl!.textContent = `Selected: ${result.name} — ${formatPrice(result.priceCents, result.currency)}/yr`;
+    payBtn!.disabled = false;
   }
 
   async function runSearch(): Promise<void> {
