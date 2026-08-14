@@ -64,6 +64,7 @@ export async function checkDomain(env: Env, domain: string): Promise<DomainPrici
 
   const json = (await res.json()) as {
     success: boolean;
+    errors?: Array<{ code: number; message: string }>;
     result?: Array<{
       name: string;
       registrable: boolean;
@@ -73,7 +74,9 @@ export async function checkDomain(env: Env, domain: string): Promise<DomainPrici
   };
 
   if (!json.success || !json.result?.length) {
-    throw new Error('Cloudflare domain-check request failed');
+    throw new Error(
+      `Cloudflare domain-check request failed (HTTP ${res.status}): ${JSON.stringify(json.errors ?? json)}`,
+    );
   }
 
   const result = json.result[0];
@@ -99,6 +102,7 @@ export async function searchDomains(env: Env, query: string, limit = 8): Promise
 
   const json = (await res.json()) as {
     success: boolean;
+    errors?: Array<{ code: number; message: string }>;
     result?: Array<{
       name: string;
       registrable: boolean;
@@ -108,7 +112,9 @@ export async function searchDomains(env: Env, query: string, limit = 8): Promise
   };
 
   if (!json.success || !json.result) {
-    throw new Error('Cloudflare domain-search request failed');
+    throw new Error(
+      `Cloudflare domain-search request failed (HTTP ${res.status}): ${JSON.stringify(json.errors ?? json)}`,
+    );
   }
 
   return json.result.map((r) => {
