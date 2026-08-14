@@ -5,10 +5,24 @@ compatibility_flags = ["nodejs_compat"]
 
 # Without this, `wrangler deploy` treats the absence of a [vars] block
 # here as authoritative and wipes out every env var/secret set via the
-# dashboard on each deploy - confirmed live: CF_REGISTRAR_ACCOUNT_ID kept
-# coming through as undefined because each git push erased it right
-# after it was set. This keeps dashboard-configured vars intact.
+# dashboard on each deploy. Kept as a second layer of protection for the
+# 3 actual secrets (STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET,
+# CF_REGISTRAR_API_TOKEN), which stay dashboard-only and are never
+# committed here.
 keep_vars = true
+
+# Non-secret config committed directly instead of relying on the
+# dashboard: despite the value being correctly set there (confirmed via
+# live Workers Logs metadata matching this account ID exactly),
+# env.CF_REGISTRAR_ACCOUNT_ID kept coming through as undefined at
+# runtime across multiple manual + git-triggered deploys - undiagnosed
+# dashboard/deploy sync issue. Baking it in here is deterministic and
+# sidesteps it entirely. None of these values are sensitive.
+[vars]
+CF_REGISTRAR_ACCOUNT_ID = "310cbbf4be13e6f5895ecfb2806ad913"
+DOMAIN_MARKUP_PERCENT = "20"
+FORM_NOTIFY_ENDPOINT = "https://script.google.com/macros/s/AKfycbwFeFnRgLeLPAQceRK8U2AR82WhCHyJH7Q3KX7KmLRNnhdhWJyzP1DKDcn1SlwvrWIN2w/exec"
+STRIPE_PRICE_SOCIAL = "price_1U48czGdJWj834FK08LhjyNl"
 
 [assets]
 directory = "./dist"
