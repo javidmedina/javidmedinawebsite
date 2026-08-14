@@ -3,6 +3,13 @@ main = "worker/index.ts"
 compatibility_date = "2024-12-01"
 compatibility_flags = ["nodejs_compat"]
 
+# Without this, `wrangler deploy` treats the absence of a [vars] block
+# here as authoritative and wipes out every env var/secret set via the
+# dashboard on each deploy - confirmed live: CF_REGISTRAR_ACCOUNT_ID kept
+# coming through as undefined because each git push erased it right
+# after it was set. This keeps dashboard-configured vars intact.
+keep_vars = true
+
 [assets]
 directory = "./dist"
 binding = "ASSETS"
