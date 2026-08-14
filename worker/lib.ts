@@ -11,6 +11,14 @@ export interface Env {
   FORM_NOTIFY_ENDPOINT: string;
 }
 
+// Cloudflare's Workers Logs pipeline has been observed dropping the
+// message line of an Error object logged as a bare console.error() arg,
+// showing only its stack frames — so always fold the message into the
+// logged string itself rather than passing the Error object separately.
+export function errMsg(err: unknown): string {
+  return err instanceof Error ? err.message : String(err);
+}
+
 export function getStripe(env: Env): Stripe {
   return new Stripe(env.STRIPE_SECRET_KEY, {
     apiVersion: '2025-02-24.acacia',
@@ -154,6 +162,6 @@ export async function notifyOwner(env: Env, event: string, data: Record<string, 
       body: JSON.stringify({ event, ...data }),
     });
   } catch (err) {
-    console.error('notifyOwner failed:', err);
+    console.error(`notifyOwner failed: ${errMsg(err)}`);
   }
 }

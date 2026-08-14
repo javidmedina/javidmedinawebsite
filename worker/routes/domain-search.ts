@@ -1,4 +1,4 @@
-import { checkDomain, searchDomains, type Env, type DomainPricing } from '../lib';
+import { checkDomain, searchDomains, errMsg, type Env, type DomainPricing } from '../lib';
 
 function toClientShape(d: DomainPricing) {
   return {
@@ -25,7 +25,7 @@ export async function handleDomainSearch(request: Request, env: Env): Promise<Re
 
     return Response.json({ results: results.map(toClientShape) });
   } catch (err) {
-    console.error('Domain search failed:', err);
+    console.error(`Domain search failed: ${errMsg(err)}`);
     return Response.json({ error: 'Domain lookup failed. Please try again shortly.' }, { status: 502 });
   }
 }

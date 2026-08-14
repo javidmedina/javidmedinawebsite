@@ -1,4 +1,4 @@
-import { checkDomain, getStripe, type Env } from '../lib';
+import { checkDomain, getStripe, errMsg, type Env } from '../lib';
 
 interface DomainCheckoutBody {
   domain?: string;
@@ -34,7 +34,7 @@ export async function handleCreateDomainCheckoutSession(request: Request, env: E
   try {
     pricing = await checkDomain(env, domain);
   } catch (err) {
-    console.error('Domain re-check failed:', err);
+    console.error(`Domain re-check failed: ${errMsg(err)}`);
     return Response.json({ error: 'Could not verify domain availability. Please try again.' }, { status: 502 });
   }
 
@@ -76,7 +76,7 @@ export async function handleCreateDomainCheckoutSession(request: Request, env: E
 
     return Response.json({ url: session.url });
   } catch (err) {
-    console.error('Stripe domain checkout session creation failed:', err);
+    console.error(`Stripe domain checkout session creation failed: ${errMsg(err)}`);
     return Response.json({ error: 'Failed to create checkout session' }, { status: 500 });
   }
 }

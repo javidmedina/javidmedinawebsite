@@ -1,4 +1,4 @@
-import { getStripe, type Env } from '../lib';
+import { getStripe, errMsg, type Env } from '../lib';
 
 interface CheckoutRequestBody {
   plan?: string;
@@ -52,7 +52,7 @@ export async function handleCreateCheckoutSession(request: Request, env: Env): P
 
     return Response.json({ url: session.url });
   } catch (err) {
-    console.error('Stripe checkout session creation failed:', err);
+    console.error(`Stripe checkout session creation failed: ${errMsg(err)}`);
     return Response.json({ error: 'Failed to create checkout session' }, { status: 500 });
   }
 }

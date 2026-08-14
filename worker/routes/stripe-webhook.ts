@@ -1,5 +1,5 @@
 import Stripe from 'stripe';
-import { getStripe, registerDomain, notifyOwner, type Env } from '../lib';
+import { getStripe, registerDomain, notifyOwner, errMsg, type Env } from '../lib';
 
 export async function handleStripeWebhook(request: Request, env: Env): Promise<Response> {
   const stripe = getStripe(env);
@@ -18,7 +18,7 @@ export async function handleStripeWebhook(request: Request, env: Env): Promise<R
     // for the edge-compatible path.
     event = await stripe.webhooks.constructEventAsync(rawBody, signature, env.STRIPE_WEBHOOK_SECRET);
   } catch (err) {
-    console.error('Webhook signature verification failed:', err);
+    console.error(`Webhook signature verification failed: ${errMsg(err)}`);
     return new Response('Invalid signature', { status: 400 });
   }
 
@@ -66,8 +66,8 @@ export async function handleStripeWebhook(request: Request, env: Env): Promise<R
           refund.succeeded = stripeRefund.status === 'succeeded' || stripeRefund.status === 'pending';
           refund.detail = { id: stripeRefund.id, status: stripeRefund.status };
         } catch (refundErr) {
-          console.error('Auto-refund failed for domain purchase:', domain, refundErr);
-          refund.detail = refundErr instanceof Error ? refundErr.message : String(refundErr);
+          console.error(`Auto-refund failed for domain purchase: ${domain} — ${errMsg(refundErr)}`);
+          refund.detail = errMsg(refundErr);
         }
       }
     }
