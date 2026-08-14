@@ -31,12 +31,20 @@ worker/
                                  falls back to env.ASSETS.fetch() for everything else
   lib.ts                        shared Env type, Stripe client, Cloudflare Registrar calls
   routes/
-    create-checkout-session.ts        Stripe Checkout for the $299 plan
+    create-checkout-session.ts        Stripe Checkout for the $299 plan (one-time, collects phone)
     domain-search.ts                  Cloudflare Registrar search/check, with your markup applied
-    create-domain-checkout-session.ts Stripe Checkout for a specific domain (re-verifies price server-side)
-    stripe-webhook.ts                 verifies Stripe signature, registers the domain, auto-refunds
-                                       on registration failure, emails you
-scripts/Code.gs                 extended (not replaced) — also logs/emails Stripe payment + refund events
+    create-domain-checkout-session.ts Stripe Checkout *subscription* for a specific domain — billed
+                                       yearly at (re-verified) registration cost + markup, collects phone
+    domain-checkout-details.ts        looks up a completed domain Checkout Session by ID, for the
+                                       post-purchase confirmation panel (never trusts client-supplied price)
+    domain-handoff.ts                 records the buyer's choice (send to Javid to link vs. self-manage)
+                                       and emails you
+    stripe-webhook.ts                 verifies Stripe signature; on first payment registers the domain
+                                       (auto_renew requested) and auto-refunds+cancels on registration
+                                       failure; on renewal/failed-renewal/cancellation of the domain
+                                       subscription, emails you — see "Domain renewal" below
+scripts/Code.gs                 extended (not replaced) — also logs/emails Stripe payment, renewal,
+                                 cancellation, and handoff-choice events
 ```
 
 Typecheck and build were run and pass clean (`npm run typecheck`, `npm run build`), and every route
@@ -116,13 +124,19 @@ plain text.
 
 1. **Product for the $299 plan**: Dashboard → Product catalog → Add product → one-time price,
    $299 USD → copy the resulting `price_...` ID into `STRIPE_PRICE_SOCIAL`.
+   (The domain product/price is *not* pre-created — `create-domain-checkout-session.ts` builds a
+   one-off recurring price inline at checkout time, since the amount depends on the specific domain.)
 2. **Webhook**: Dashboard → Developers → Webhooks → Add endpoint →
-   `https://<your-domain>/api/stripe-webhook` → listen for `checkout.session.completed` → copy the
-   signing secret into `STRIPE_WEBHOOK_SECRET`.
+   `https://<your-domain>/api/stripe-webhook` → listen for **all four** of `checkout.session.completed`,
+   `invoice.paid`, `invoice.payment_failed`, `customer.subscription.deleted` → copy the signing secret
+   into `STRIPE_WEBHOOK_SECRET`. The last three only matter for the domain subscription (its renewals,
+   failed renewals, and cancellations) — the $299 plan is a one-time payment and never triggers them.
    (You can only do this after the first deploy, once you have a real URL.)
 3. Start in **test mode** (test API keys, test card `4242 4242 4242 4242`) and confirm the full
    flow — click "Get Started" on the Social & Creator card, complete checkout, confirm you get the
-   email from `Code.gs` — before flipping to live keys.
+   email from `Code.gs` — before flipping to live keys. For the domain subscription, also use the
+   Stripe CLI or Dashboard to simulate `invoice.paid` (renewal) and `customer.subscription.deleted`
+   (cancellation) against a test subscription, since those only happen naturally a year later otherwise.
 
 ## 5. Cloudflare Registrar API prerequisites (for the domain search/purchase feature)
 
@@ -137,14 +151,53 @@ This is a **beta** API — behavior may still change. Before it'll work:
    endpoints return `available: false` with a reason (e.g. `extension_not_supported_via_api`) when
    that happens; the UI shows it as unavailable rather than failing silently.
 
-**Renewal is not automated.** The registration response comes back with `auto_renew: false`. This
-integration handles the first-year purchase; deciding whether/how to renew (and whether to re-bill
-the client) is a separate decision.
-
 **Registration failures after payment auto-refund.** If Cloudflare registration fails after Stripe
 payment succeeds (e.g. lost a race to another buyer for the same domain), `stripe-webhook.ts`
-refunds automatically via the Stripe API rather than leaving the client charged with nothing —
-refund outcome is logged/emailed alongside the registration status.
+cancels the subscription and refunds the first charge automatically via the Stripe API rather than
+leaving the client on the hook for a domain they don't have — refund/cancellation outcome is
+logged/emailed alongside the registration status.
+
+### Domain renewal: two independent yearly cycles, not one automated pipeline
+
+The client side is a real Stripe **subscription** (`mode: 'subscription'`, yearly interval,
+`create-domain-checkout-session.ts`): they're billed once a year, indefinitely, at whatever the
+domain's registration cost is at signup time plus your `DOMAIN_MARKUP_PERCENT` markup — that price
+is fixed at signup, it doesn't get re-quoted each renewal. Cancelling in the Stripe customer portal
+(or you cancelling it for them) stops future billing but doesn't touch the domain itself.
+
+The registrar side is handled separately: `registerDomain()` passes `auto_renew: true` at
+registration, which authorizes Cloudflare to renew the domain itself using your Cloudflare account's
+payment method (up to 30 days before expiry, at cost — no markup from Cloudflare, that's where your
+margin from the Stripe subscription comes from). **The beta Registrar API has no endpoint to change
+`auto_renew` after registration** — it's a create-time-only flag — so if a client cancels their
+Stripe subscription, Cloudflare will still keep auto-renewing (and billing your CF account for) that
+domain until you manually turn auto-renew off for it in the Cloudflare dashboard. `stripe-webhook.ts`
+emails you on cancellation specifically so this doesn't get missed; treat that email as an action
+item, not just an FYI.
+
+These two cycles aren't linked beyond both being roughly annual — a renewal succeeding on the Stripe
+side doesn't trigger anything on the Cloudflare side (Cloudflare's `auto_renew` already covers it),
+it's just a confirmation email. A **failed** Stripe renewal charge (`invoice.payment_failed`) *is*
+worth acting on manually, since Cloudflare's auto-renew will still try to charge your account
+regardless of whether the client's card worked.
+
+### Phone numbers + the post-purchase handoff panel
+
+Both Stripe Checkout Sessions (`create-checkout-session.ts` for the $299 plan, and
+`create-domain-checkout-session.ts` for the domain subscription) set `phone_number_collection.enabled
+= true`, so Stripe's hosted checkout page itself asks for a phone number — no site-side form field
+needed, it shows up on `session.customer_details.phone` and gets included in the owner-notification
+email alongside the rest of the purchase details.
+
+After a domain purchase, the buyer is redirected back with `?domain_checkout=success&session_id=...`.
+`src/modules/domain-purchase-confirmation.ts` re-fetches the purchase from `/api/domain-checkout-
+details` (authoritative, from Stripe — never trusts the redirect's query params for what was
+actually bought) and shows a panel with the domain and price, plus a choice: "send it to Javid to
+link it" (the normal path) or "I'll manage it myself". Either way the domain is registered under
+your Cloudflare account, so "manage it myself" still starts with you granting access or transferring
+it out — the choice just tells `/api/domain-handoff` which email to send you so you know which
+conversation to start. You're notified of every domain purchase via the webhook regardless of
+whether the buyer interacts with this panel at all.
 
 ## 6. Local development
 

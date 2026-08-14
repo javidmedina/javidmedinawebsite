@@ -146,12 +146,19 @@ export async function searchDomains(env: Env, query: string, limit = 8): Promise
   });
 }
 
-/** Registers a domain, billed at cost to this Cloudflare account's payment method. */
+/**
+ * Registers a domain, billed at cost to this Cloudflare account's payment
+ * method. Requests auto_renew at registration time — the beta Registrar API
+ * only exposes that flag at creation, there's no endpoint to flip it later
+ * — so Cloudflare keeps the domain alive on its own each year. The paired
+ * Stripe subscription re-bills the client annually to cover that cost plus
+ * markup; the two renewals aren't wired together, they just both recur.
+ */
 export async function registerDomain(env: Env, domain: string): Promise<{ ok: boolean; detail: unknown }> {
   const res = await fetch(`${CF_API_BASE}/accounts/${env.CF_REGISTRAR_ACCOUNT_ID}/registrar/registrations`, {
     method: 'POST',
     headers: cfHeaders(env),
-    body: JSON.stringify({ domain_name: domain }),
+    body: JSON.stringify({ domain_name: domain, auto_renew: true }),
   });
   const detail = await res.json();
   return { ok: res.ok, detail };

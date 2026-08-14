@@ -48,27 +48,38 @@ export async function handleCreateDomainCheckoutSession(request: Request, env: E
   const stripe = getStripe(env);
   const origin = new URL(request.url).origin;
 
+  // Both the Checkout Session's own metadata (read by the
+  // checkout.session.completed handler for the first-year registration)
+  // and subscription_data.metadata (snapshotted onto every renewal invoice
+  // and onto the Subscription object itself) need domain/email — the two
+  // live on different Stripe objects and neither inherits from the other.
+  const domainMetadata = { kind: 'domain_registration', domain, email };
+
   try {
     const session = await stripe.checkout.sessions.create({
-      mode: 'payment',
+      mode: 'subscription',
       payment_method_types: ['card'],
       customer_email: email,
+      phone_number_collection: { enabled: true },
       line_items: [
         {
           quantity: 1,
           price_data: {
             currency: pricing.currency.toLowerCase(),
             unit_amount: pricing.clientPriceCents,
+            recurring: { interval: 'year' },
             product_data: {
-              name: `Domain registration: ${domain} (1 year)`,
-              description: 'First-year registration. Renewal is handled separately, not auto-billed.',
+              name: `Domain registration: ${domain} (annual)`,
+              description:
+                'Billed once a year for as long as you keep the domain, at the then-current registration cost plus markup. Cancel anytime — cancelling stops future billing but does not release the domain automatically, contact me to sort that out.',
             },
           },
         },
       ],
-      success_url: `${origin}/?domain_checkout=success`,
+      subscription_data: { metadata: domainMetadata },
+      success_url: `${origin}/?domain_checkout=success&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/?domain_checkout=cancelled`,
-      metadata: { kind: 'domain_registration', domain },
+      metadata: domainMetadata,
     });
 
     if (!session.url) {

@@ -83,3 +83,51 @@
 #domainPayBtn {
   @apply self-start;
 }
+
+/* New: post-purchase domain confirmation + owner/self handoff choice,
+   shown at the top of the page after a successful domain subscription
+   checkout (see src/modules/domain-purchase-confirmation.ts) */
+.domain-purchase-panel {
+  @apply border-b border-black/10 bg-[#f4f9f5] px-4 py-8;
+}
+
+.domain-purchase-panel__inner {
+  @apply mx-auto flex max-w-2xl flex-col gap-3 border-l-4 border-[#2e7d32] pl-4;
+}
+
+.domain-purchase-panel__title {
+  @apply text-xl font-semibold;
+}
+
+.domain-purchase-panel__summary {
+  @apply text-base font-medium;
+}
+
+.domain-purchase-panel__hint,
+.domain-purchase-panel__note {
+  @apply text-sm text-black/60;
+}
+
+.domain-purchase-panel__notes {
+  @apply w-full;
+}
+
+.domain-purchase-panel__actions {
+  @apply flex flex-col gap-2 sm:flex-row;
+}
+
+.domain-purchase-panel__btn {
+  @apply rounded-md px-4 py-2 text-sm font-medium transition-opacity hover:opacity-80 disabled:opacity-50;
+}
+
+.domain-purchase-panel__btn--primary {
+  @apply bg-black text-white;
+}
+
+.domain-purchase-panel__btn--secondary {
+  @apply border border-black/20 bg-transparent text-black;
+}
+
+.domain-purchase-panel__feedback {
+  @apply text-sm font-medium text-[#2e7d32] empty:hidden;
+}
