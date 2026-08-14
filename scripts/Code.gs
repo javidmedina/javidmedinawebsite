@@ -61,11 +61,16 @@ function handlePaymentEvent(data) {
   if (sheet.getLastRow() === 0) {
     sheet.appendRow([
       'Timestamp', 'Event', 'Domain', 'Plan', 'Email',
-      'Amount Paid', 'Currency', 'Stripe Session', 'Registration OK'
+      'Amount Paid', 'Currency', 'Stripe Session', 'Registration OK', 'Refund'
     ]);
   }
 
   var amount = typeof data.amountPaid === 'number' ? (data.amountPaid / 100).toFixed(2) : '';
+
+  var refundStatus = '';
+  if (data.event === 'domain_registration' && data.refundAttempted) {
+    refundStatus = data.refundSucceeded ? 'Refunded' : 'REFUND FAILED — CHECK MANUALLY';
+  }
 
   sheet.appendRow([
     new Date(),
@@ -76,7 +81,8 @@ function handlePaymentEvent(data) {
     amount,
     (data.currency || '').toUpperCase(),
     data.stripeSessionId || '',
-    data.event === 'domain_registration' ? (data.registrationSucceeded ? 'Yes' : 'FAILED — CHECK MANUALLY') : ''
+    data.event === 'domain_registration' ? (data.registrationSucceeded ? 'Yes' : 'FAILED — CHECK MANUALLY') : '',
+    refundStatus
   ]);
 
   sendPaymentNotification(data, amount);
@@ -108,14 +114,28 @@ function sendPaymentNotification(data, amount) {
   var recipient = 'javidamedina@gmail.com';
 
   if (data.event === 'domain_registration') {
-    var subject = data.registrationSucceeded
-      ? 'Domain purchased & registered: ' + data.domain
-      : 'ACTION NEEDED — domain paid but registration FAILED: ' + data.domain;
+    var refundLine = '—';
+    var subjectPrefix = 'Domain purchased & registered: ';
+
+    if (!data.registrationSucceeded) {
+      if (data.refundAttempted && data.refundSucceeded) {
+        refundLine = 'Yes — client was automatically refunded';
+        subjectPrefix = 'Domain registration FAILED (auto-refunded): ';
+      } else if (data.refundAttempted) {
+        refundLine = 'ATTEMPTED BUT FAILED — refund the client manually in Stripe';
+        subjectPrefix = 'ACTION NEEDED — domain paid, registration FAILED, refund FAILED: ';
+      } else {
+        subjectPrefix = 'ACTION NEEDED — domain paid but registration FAILED: ';
+      }
+    }
+
+    var subject = subjectPrefix + data.domain;
 
     var body = 'Domain: ' + (data.domain || '—') + '\n' +
       'Client email: ' + (data.email || '—') + '\n' +
       'Amount paid: ' + amount + ' ' + (data.currency || '').toUpperCase() + '\n' +
       'Cloudflare registration succeeded: ' + (data.registrationSucceeded ? 'Yes' : 'NO — register manually in the Cloudflare dashboard') + '\n' +
+      'Refunded: ' + refundLine + '\n' +
       'Stripe session: ' + (data.stripeSessionId || '—') + '\n\n' +
       'View log:\n' + SpreadsheetApp.getActiveSpreadsheet().getUrl();
 

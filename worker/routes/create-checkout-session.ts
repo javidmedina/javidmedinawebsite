@@ -1,4 +1,4 @@
-import { getStripe, type Env } from '../_lib';
+import { getStripe, type Env } from '../lib';
 
 interface CheckoutRequestBody {
   plan?: string;
@@ -16,9 +16,7 @@ function getPlanPriceId(env: Env, plan: string): string | undefined {
   return map[plan];
 }
 
-export const onRequestPost: PagesFunction<Env> = async (context) => {
-  const { request, env } = context;
-
+export async function handleCreateCheckoutSession(request: Request, env: Env): Promise<Response> {
   let body: CheckoutRequestBody;
   try {
     body = await request.json();
@@ -57,10 +55,4 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     console.error('Stripe checkout session creation failed:', err);
     return Response.json({ error: 'Failed to create checkout session' }, { status: 500 });
   }
-};
-
-// Reject non-POST methods explicitly rather than falling through to a
-// generic 404/405 from the platform.
-export const onRequestGet: PagesFunction<Env> = async () => {
-  return Response.json({ error: 'Method not allowed' }, { status: 405 });
-};
+}

@@ -1,4 +1,15 @@
-name = "javidmedinawebsite"
-pages_build_output_dir = "dist"
+name = "home"
+main = "worker/index.ts"
 compatibility_date = "2024-12-01"
 compatibility_flags = ["nodejs_compat"]
+
+[assets]
+directory = "./dist"
+binding = "ASSETS"
+# Left at Cloudflare's default (auto-trailing-slash): it 307-redirects
+# /terms.html -> /terms, which is a harmless behavior difference from
+# the old Pages setup (content is identical either way, browsers follow
+# it transparently). Tried pinning html_handling = "none" to avoid that
+# redirect, but it also disabled the "/" -> index.html mapping and broke
+# the homepage (confirmed locally) - not worth that risk for a cosmetic
+# redirect on one page.

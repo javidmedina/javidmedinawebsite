@@ -313,6 +313,14 @@ a {
   100% { transform: translateX(-50%); }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  /* The other two marquees (marquee-text.ts, marquee-boxes.ts) already
+     check this and freeze — this one is pure-CSS and was missing it. */
+  .hero__marquee-track {
+    animation: none;
+  }
+}
+
 .hero__actions {
   display: flex;
   justify-content: center;
@@ -1400,6 +1408,15 @@ select.cta-form__input {
     width: 100%;
     height: 100%;
     object-fit: cover;
+  }
+
+  /* Tooltip content (title/description/CTA) is hover-only by default,
+     but touch devices have no persistent hover to trigger it — show it
+     inline, always, for the single active carousel card instead of
+     hiding the pitch behind an interaction mobile can't perform. */
+  .marquee--boxes.is-mobile-carousel .marquee__tooltip {
+    grid-template-rows: 1fr;
+    pointer-events: auto;
   }
 
   /* hide duplicates and placeholders on mobile (set by JS / always hidden) */
